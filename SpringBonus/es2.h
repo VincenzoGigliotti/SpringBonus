@@ -30,19 +30,19 @@ double sum(int *a, int *b, int *c) {
 }
 
 double findmax(int *c) {
-    int max = INT_MIN;
+    int currentmax = INT_MIN;
 
     double start = omp_get_wtime();
     
-    #pragma omp parallel for
+    #pragma omp parallel for reduction(max : currentmax)
     for (int i = 0; i < dim; i++) {
-        if (c[i] > max) {
-            max = c[i];
+        if (c[i] > currentmax) {
+            currentmax = c[i];
         }
     }
     double end = omp_get_wtime();
     
-    cout << "Il massimo è: " << max << endl;
+    cout << "Il massimo è: " << currentmax << endl;
     
     return end - start;
 }
@@ -58,7 +58,6 @@ void es2() {
     cout << "Tempo per calcolare c: " << sum(a, b, c) << endl;
 
     cout << "Tempo per trovare il massimo in c: " << findmax(c) << endl;
-
 
     delete [] a;
     delete [] b;
