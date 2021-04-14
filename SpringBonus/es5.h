@@ -9,11 +9,19 @@ class GameOfLife {
     private:
     bool **attuale;
     long int celle;
+    unsigned nmt;
     void genera();
+    void iniziaPartita();
+    void stampaCelle();
+    void next();
+    unsigned check(long int i, long int j);
+    bool** setta();
+    long int celleVive();
 
     public:
-    GameOfLife(long celle) {
+    GameOfLife(long celle, unsigned nmt) {
         this->celle = celle;
+        this->nmt = nmt;
         attuale = setta();
     }
 
@@ -24,13 +32,9 @@ class GameOfLife {
         } 
         delete [] attuale;
     }
-       
-    void iniziaPartita();
-    void stampaCelle();
-    void next();
-    unsigned check(long int i, long int j);
-    bool** setta();
-
+    
+    void startGame();
+   
 
 
 };

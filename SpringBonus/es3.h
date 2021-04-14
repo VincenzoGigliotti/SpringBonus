@@ -14,12 +14,12 @@ void output(double pig, double time) {
     cout << "Time: " << time << endl << "PiGreco: " << pig << endl;
 }
 
-void ciclica() {
+void ciclica(unsigned nmt) {
    int i, nthreads;
     double pig, sum[nt], step = 1.0/(double) ns;
     double start = omp_get_wtime();
     omp_set_num_threads(nt);
-    #pragma omp parallel 
+    #pragma omp parallel num_threads(nmt)
     {
         int i, id, n;
         double x;
@@ -39,12 +39,11 @@ void ciclica() {
     output(pig, end - start);
 }
 
-void critica() {
+void critica(unsigned nmt) {
     int i, nthreads;
     double pig, step = 1.0/(double) ns;
     double start = omp_get_wtime();
-    omp_set_num_threads(nt);
-    #pragma omp parallel 
+    #pragma omp parallel num_threads(nmt)
     {
         int i, id, n;
         double x, sum;
@@ -63,12 +62,12 @@ void critica() {
     output(pig, end - start);
 }
 
-void padding() {
+void padding(unsigned nmt) {
     int i, nthreads;
     double pig, sum[nt][PAD], step = 1.0/(double) ns;
     double start = omp_get_wtime();
     omp_set_num_threads(nt);
-    #pragma omp parallel 
+    #pragma omp parallel num_threads(nmt)
     {
         int i, id, n;
         double x;
@@ -87,13 +86,13 @@ void padding() {
    output(pig, end - start);
 }
 
-void reduction() {
+void reduction(unsigned nmt) {
     double area = 0.0, pig, x;
     int i, n;
     n = 100000;
     
     double start = omp_get_wtime();
-    #pragma omp parallel for private(x) reduction(+ : area) 
+    #pragma omp parallel for private(x) reduction(+ : area) num_threads(nmt)
     for (i = 0; i < n; i++) {
         x = (i + 0.5) /n;
         area += 4.0 / (1.0 + x * x);
@@ -104,13 +103,13 @@ void reduction() {
     output(pig, end - start);
 }
 
-void monteCarlo() {
+void monteCarlo(unsigned nmt) {
     long num_trials = 100000000, i, Ncirc = 0;
     double pig, x, y, r = 1.0;
 
     double start = omp_get_wtime();
     
-    #pragma omp parallel private(x, y) reduction(+ : Ncirc)
+    #pragma omp parallel private(x, y) reduction(+ : Ncirc)  num_threads(nmt)
     {
         unsigned int seed = (unsigned int) (omp_get_wtime()*10000.0*(double)omp_get_thread_num()/pi);
 
@@ -130,12 +129,23 @@ void monteCarlo() {
 }
 
 
-
 void es3() {
-    monteCarlo();
+    cout << "Inserisci numero threads" << endl;
+    unsigned nmt;
+    cin >> nmt;
+    cout << "Calcolo piGreco con distribuzione ciclica ";
+    ciclica(nmt);
+    cout << endl << "Calcolo piGreco con sezione critica ";
+    critica(nmt);
+    cout << endl << "Calcolo piGreco con padding ";
+    padding(nmt);
+    cout << endl;
+    cout << endl << "Calcolo piGreco con reduction ";
+    reduction(nmt);
+    cout << endl << "Calcolo piGreco con Monte Carlo ";
+    monteCarlo(nmt);
+    cout << endl;
 }
-
-
 
 
 #endif

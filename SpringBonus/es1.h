@@ -10,14 +10,15 @@
 using namespace std;
 
 
-double es1Static(unsigned dim) {
+double es1Static(unsigned dim, unsigned nmt) {
     double *vec = new double [dim * dim];
 
     double start = omp_get_wtime();
 
-    #pragma omp parallel
+    #pragma omp parallel num_threads(nmt)
     {
-        #pragma omp for schedule(static)
+        omp_set_num_threads(nmt);
+        #pragma omp for schedule(static) 
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
                 vec[(i * dim) + j] = 15 * sin(j) * cos(i) * sqrt(2 * i) * pi * pow(j, 6);
@@ -31,14 +32,14 @@ double es1Static(unsigned dim) {
     return end - start;
 }
 
-double es1Dynamic(unsigned dim) {
+double es1Dynamic(unsigned dim, unsigned nmt) {
     double *vec = new double [dim * dim];
 
     double start = omp_get_wtime();
 
-    #pragma omp parallel
+    #pragma omp parallel num_threads(nmt)
     {
-        #pragma omp for schedule(dynamic)
+        #pragma omp for schedule(dynamic) 
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
                 vec[(i * dim) + j] = 15 * sin(j) * cos(i) * sqrt(2 * i) * pi * pow(j, 6);
@@ -52,7 +53,11 @@ double es1Dynamic(unsigned dim) {
 
 
 void es1() {
-    cout << "Inserisci dimensione della matrice" << endl;
+    cout << "Inserisci numero threads" << endl;
+    unsigned nmt;
+    cin >> nmt;
+    cout << "Numero thread in utilizzo: " << nmt << endl;
+    cout << endl <<"Inserisci dimensione della matrice" << endl;
     unsigned dim;
     cin >> dim;
 
@@ -63,10 +68,10 @@ void es1() {
     cin >> scelta;
 
     if (scelta > 0) {
-        cout << "Tempo: " << es1Static(dim);
+        cout << "Tempo: " << es1Static(dim, nmt);
     }
     else if (scelta < 0) {
-        cout << "Tempo: " << es1Dynamic(dim);
+        cout << "Tempo: " << es1Dynamic(dim, nmt);
     }
     else {
         cout << "Non valido!" << endl;
