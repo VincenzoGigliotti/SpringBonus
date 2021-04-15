@@ -35,7 +35,6 @@ void menu() {
             es4();
             break;
         case 5:
-            cout << "Inserire dimensione matrice ";
             runEs5();
             break;
         default:
